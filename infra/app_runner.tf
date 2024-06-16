@@ -15,16 +15,16 @@ resource "aws_apprunner_service" "chatbot" {
       image_identifier      = "211125601087.dkr.ecr.us-east-1.amazonaws.com/test-chatbot:tag"
       image_repository_type = "ECR"
     }
-auto_deployments_enabled = false
-}
+    auto_deployments_enabled = false
+  }
 
-instance_configuration {
-      cpu    = "1024"
-      memory = "2048"
-    }
-    network_configuration {
-      egress_configuration {
-        egress_type = "DEFAULT"
-      }
+  instance_configuration {
+    cpu    = "1024"
+    memory = "2048"
+  }
+  network_configuration {
+    egress_configuration {
+      egress_type = "DEFAULT"
     }
   }
+}
