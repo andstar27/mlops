@@ -40,7 +40,7 @@ resource "aws_apprunner_service" "chatbot" {
     authentication_configuration {
       access_role_arn = aws_iam_role.apprunner_access_role.arn
     }
-auto_deployments_enabled = false
+    auto_deployments_enabled = false
   }
 
   instance_configuration {
