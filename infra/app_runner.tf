@@ -2,6 +2,28 @@ locals {
   hf_token = var.hf_token
 }
 
+resource "aws_iam_role" "apprunner_access_role" {
+  name = "apprunner-access-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "build.apprunner.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "apprunner_access_policy_attachment" {
+  role       = aws_iam_role.apprunner_access_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess"
+}
+
 resource "aws_apprunner_service" "chatbot" {
   service_name = "chatbot"
   source_configuration {
