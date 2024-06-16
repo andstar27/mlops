@@ -3,63 +3,61 @@ name: 'Infra using Terraform'
 on:
   push:
     branches:
-      - 'main'
+      - main
     paths:
       - 'infra/**'
-      - '.github/workflows/deploy_infra.yml'
+      - '.github/workflows/terraform.yml'
   pull_request:
     branches:
-      - 'main'
-
-permissions:
-  contents: read
+      - main
+    paths:
+      - 'infra/**'
+      - '.github/workflows/terraform.yml'
 
 jobs:
   terraform:
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      TF_VAR_hf_token: ${{ secrets.HUGGINGFACEHUB_API_TOKEN }}
-    name: "Terraform"
+    name: 'Terraform Apply'
     runs-on: ubuntu-latest
-    environment: development
 
     steps:
-    # Checkout the repository to the GitHub Actions runner
-    - name: Checkout
-      uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-    - uses: hashicorp/setup-terraform@v1
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v1
       with:
-        terraform_version: 1.8.0
+        terraform_version: 1.0.11
 
-    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-    - name: Terraform Init
-      id: init
-      working-directory: ./infra
-      run: | 
-        terraform init
+    - name: Check Terraform Formatting
+      run: terraform fmt -check -recursive
+      working-directory: infra
 
-    # Linting
-    - name: Lint Terraform
-      uses: actionshub/terraform-lint@main
+    - name: Initialize Terraform
+      run: terraform init
+      working-directory: infra
 
-    # Checks that all Terraform configuration files adhere to a canonical format
-    - name: Terraform Format
-      id: fmt
+    - name: Terraform Lint
       run: terraform fmt -check
+      working-directory: infra
 
-    - name: Terraform Validate
-      id: validate
-      run: terraform validate -no-color
+    - name: Validate Terraform
+      run: terraform validate
+      working-directory: infra
 
-    # Generates an execution plan for Terraform
     - name: Terraform Plan
-      working-directory: ./infra
-      run: terraform plan -lock-timeout=100s -input=false -out=./tfplan
+      id: plan
+      run: terraform plan -out=tfplan
+      working-directory: infra
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        HUGGINGFACEHUB_API_TOKEN: ${{ secrets.HUGGINGFACEHUB_API_TOKEN }}
 
     - name: Terraform Apply
-      id: apply
-      working-directory: ./infra
-      run: terraform apply -lock-timeout=100s -auto-approve ./tfplan
+      if: github.ref == 'refs/heads/main'
+      run: terraform apply -auto-approve tfplan
+      working-directory: infra
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        HUGGINGFACEHUB_API_TOKEN: ${{ secrets.HUGGINGFACEHUB_API_TOKEN }}
