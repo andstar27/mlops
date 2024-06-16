@@ -10,6 +10,8 @@ resource "aws_apprunner_service" "chatbot" {
       image_repository_type = "ECR"
       image_configuration {
         port = "8080"
+        runtime_environment_variables = {
+          HUGGINGFACEHUB_API_TOKEN = local.hf_token
       }
     }
   }
@@ -22,10 +24,6 @@ resource "aws_apprunner_service" "chatbot" {
       egress_type = "DEFAULT"
     }
   }
-  environment {
-    variables = {
-      HUGGINGFACEHUB_API_TOKEN = hf_token
-    }
   }
   tags = {
     Name        = "Chatbot"
