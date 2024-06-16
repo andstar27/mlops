@@ -37,7 +37,11 @@ resource "aws_apprunner_service" "chatbot" {
       image_identifier      = "211125601087.dkr.ecr.us-east-1.amazonaws.com/test-chatbot:tag"
       image_repository_type = "ECR"
     }
-    auto_deployments_enabled = false
+    authentication_configuration {
+      access_role_arn = aws_iam_role.apprunner_access_role.arn
+    }
+  }
+auto_deployments_enabled = false
   }
 
   instance_configuration {
