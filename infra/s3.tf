@@ -1,4 +1,4 @@
 resource "aws_s3_bucket" "test-bucket" {
-  bucket = "mlstudy-test12345"
+  bucket = "test-test12345"
 
 }
