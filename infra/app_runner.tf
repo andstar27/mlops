@@ -34,7 +34,7 @@ resource "aws_apprunner_service" "chatbot" {
           HUGGINGFACEHUB_API_TOKEN = local.hf_token
         }
       }
-      image_identifier      = "211125601087.dkr.ecr.us-east-1.amazonaws.com/test-chatbot:tag"
+      image_identifier      = "211125601087.dkr.ecr.us-east-1.amazonaws.com/test-chatbot:2"
       image_repository_type = "ECR"
     }
     authentication_configuration {
