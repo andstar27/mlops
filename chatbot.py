@@ -4,7 +4,7 @@ from langchain_huggingface import HuggingFaceEndpoint
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 
-# Set your Hugging Face API token
+# Set Hugging Face API token
 os.environ['HUGGINGFACEHUB_API_TOKEN'] = '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'
 
 # Model configuration
@@ -15,11 +15,11 @@ conv_model = HuggingFaceEndpoint(
     max_new_tokens=150
 )
 
-# Define a prompt template
+# Chatbot prompt template
 template = "My name is {query} and I am"
 
 
-# Define how your chatbot starts
+# How chatbot starts a conbersation
 @cl.on_chat_start
 def main():
     # Create a PromptTemplate with the provided template
@@ -32,13 +32,13 @@ def main():
     cl.user_session.set("llm_chain", conv_chain)
 
 
-# Define how your chatbot handles messages
+# How chatbot handles messages
 @cl.on_message
 async def main(message):
     # Retrieve the LLMChain from the session
     llm_chain = cl.user_session.get("llm_chain")
 
-    # Extract the message content (assuming message.content holds the user input)
+    # Extract the message content
     user_input = message.content if hasattr(message, "content") else str(message)
 
     # Create the input for the model using the prompt template
